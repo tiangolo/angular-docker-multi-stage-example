@@ -2,7 +2,7 @@
 
 Here's how to deploy an [Angular](https://angular.io/) app with [Docker](https://www.docker.com/), building it with [Node.js](https://nodejs.org) as you would do locally, but end up with a thin and efficient [Nginx](https://nginx.org/) image, with just the compiled code. Ready for production.
 
-To achieve that, you can use Docker "multi-stage builds". That will allow you to first build your Angular app inside a (possibly huge) Node JS Docker container that is later discarded in favor of a thin Nginx image with just your compiled app.
+To achieve that, you can use Docker "multi-stage builds". That will allow you to first build your Angular app inside a (possibly huge) Node JS Docker container that is later discarded in favor of a thin Nginx image with just your compiled app. And your final image will be as thin as the latest layer (Nginx).
 
 Here you will also see how to use that technique but still support [Angular CLI](https://github.com/angular/angular-cli) [environments](https://github.com/angular/angular-cli/wiki/build#build-targets-and-environment-files).
 
@@ -26,13 +26,12 @@ cd my-angular-project
 
 ```nginx
 server {
-listen 80;
-
-location / {
-root /usr/share/nginx/html;
-index index.html index.htm;
-try_files $uri $uri/ /index.html =404;
-}
+  listen 80;
+  location / {
+    root /usr/share/nginx/html;
+    index index.html index.htm;
+    try_files $uri $uri/ /index.html =404;
+  }
 }
 ```
 
@@ -302,13 +301,12 @@ But we do need to create a basic config file that we'll use later.
 
 ```nginx
 server {
-listen 80;
-
-location / {
-root /usr/share/nginx/html;
-index index.html index.htm;
-try_files $uri $uri/ /index.html =404;
-}
+  listen 80;
+  location / {
+    root /usr/share/nginx/html;
+    index index.html index.htm;
+    try_files $uri $uri/ /index.html =404;
+  }
 }
 ```
 
