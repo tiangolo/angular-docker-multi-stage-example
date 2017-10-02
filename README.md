@@ -2,7 +2,7 @@
 
 Here's how to deploy an [Angular](https://angular.io/) app with [Docker](https://www.docker.com/), building it with [Node.js](https://nodejs.org) as you would do locally, but end up with a thin and efficient [Nginx](https://nginx.org/) image, with just the compiled code. Ready for production.
 
-To achieve that, you can use Docker "multi stage builds". That will allow you to first build your Angular app inside a (possibly huge) Node JS Docker container that is later discarded in favor of a thin Nginx image with just your compiled app.
+To achieve that, you can use Docker "multi-stage builds". That will allow you to first build your Angular app inside a (possibly huge) Node JS Docker container that is later discarded in favor of a thin Nginx image with just your compiled app.
 
 Here you will also see how to use that technique but still support [Angular CLI](https://github.com/angular/angular-cli) [environments](https://github.com/angular/angular-cli/wiki/build#build-targets-and-environment-files).
 
@@ -22,21 +22,21 @@ ng new my-angular-project
 cd my-angular-project
 ```
 
-* Add an Nginx configuration inside your project directory, named `nginx-custom.conf`, with:
+* Add a Nginx configuration inside your project directory, named `nginx-custom.conf`, with:
 
 ```nginx
 server {
-    listen       80;
+listen 80;
 
-    location / {
-        root   /usr/share/nginx/html;
-        index  index.html index.htm;
-        try_files $uri $uri/ /index.html =404;
-    }
+location / {
+root /usr/share/nginx/html;
+index index.html index.htm;
+try_files $uri $uri/ /index.html =404;
+}
 }
 ```
 
-* Add a `.dockerignore` for `node_modules` with:
+* Add a `.dockerignore` for `node_modules` with:
 
 ```
 node_modules
@@ -101,7 +101,7 @@ docker run -p 80:80 my-angular-project:dev
 
 Everything above shows the actual code you need. If you're in a hurry, you could probably just copy all that. If you want to know all the details and possible optimizations, continue reading...
 
-When you build an Angular front end app, you most commonly write it in [TypeScript](http://www.typescriptlang.org/) and then compile it to JavaScript. But you need to have Node.js and several packages to do that.
+When you build an Angular front-end app, you most commonly write it in [TypeScript](http://www.typescriptlang.org/) and then compile it to JavaScript. But you need to have Node.js and several packages to do that.
 
 After you compile your app, you end up with a set of files, normally in a `./dist` directory. Those are the compiled files that you actually use to serve your app. And those files have all the optimizations that you use, for example, AOT (Ahead Of Time compilation).
 
@@ -109,11 +109,11 @@ And those files are the final product that you serve to your users. Your users d
 
 So, you need to deploy to production only those files.
 
-These are the current options before Docker multi-stage builds, take them as the "motivation" of what you are reading:
+These are the options we had before Docker multi-stage builds, take them as the "motivation" of what you are reading:
 
 ### Option 1:
 
-One way to do it, is to compile the app locally and add the compiled files to your Git repository. And then, when you are deploying, you just clone your repository and use those compiled files. As we are talking about Docker, you would create an image that copies and uses those compiled files. Your would probably use an [Nginx base image](https://hub.docker.com/_/nginx/) for that.
+One way to do it is to compile the app locally and add the compiled files to your Git repository. And then, when you are deploying, you just clone your repository and use those compiled files. As we are talking about Docker, you would create an image that copies and uses those compiled files. Your would probably use an [Nginx base image](https://hub.docker.com/_/nginx/) for that.
 
 But you never edit those compiled files directly, they are generated from your source files. They are constantly changing, so your Git repository will grow large just because you are adding compiled code. And if someone in your team works on a feature branch and has one version of those files and he wants to merge the feature to your main (probalby `master`) branch, you might have conflicts in those files, even when the source code doesn't have conflicts. So you would have to be fixing "fake" conflicts. There are probably other disadvantages, but they don't really belong to your Git repository.
 
@@ -122,7 +122,7 @@ Also, if you forget to compile everything right before deploying, you'll get an 
 
 ### Option 2:
 
-Another way to do it, would be to do not add your compiled code to your Git repository, and build your app every time you are going to deploy.
+Another way to do it would be to do not add your compiled code to your Git repository and build your app every time you are going to deploy.
 
 But this would require all your deployment servers or wherever it is that you build your Docker image to have all the tooling to deploy your app. Node.js, TypeScript, all the Angular packages, all the dependencies, etc.
 
@@ -155,13 +155,13 @@ Use [Docker multi-stage builds](https://docs.docker.com/engine/userguide/eng-ima
 
 Then you have a thin and efficient Nginx based image with just your compiled files, you don't have to add your compiled code to Git, you always get the latest compiled version of your code, you don't have to deal with dependencies outside Docker, etc.
 
-That's great! Docker multi stage buids solve several problems in one shot. And this option is what is [described in this article: "Create efficient Angular Docker images with Multi Stage Builds"](https://medium.com/@avatsaev/create-efficient-angular-docker-images-with-multi-stage-builds-907e2be3008d) But...
+That's great! Docker multi-stage builds solve several problems in one shot. And this option is what is [described in this article: "Create efficient Angular Docker images with Multi Stage Builds"](https://medium.com/@avatsaev/create-efficient-angular-docker-images-with-multi-stage-builds-907e2be3008d) But...
 
 When building your Angular code with [Angular CLI](https://github.com/angular/angular-cli) you have the option to use ["environments"](https://github.com/angular/angular-cli/wiki/build#build-targets-and-environment-files) while building the Angular app. That let's you, for example, use a production back end API while using the "`prod`" environment and use a testing back end API while using the "`dev`" environment.
 
 But with just the method described above (and in that article) we would have no way to use that feature.
 
-So, let's create an "**Option 6**" that combines all of the above and let's us use Angular CLI environments.
+So, let's create an "**Option 6**" that combines all of the above and lets us use Angular CLI environments.
 
 
 ## Requirements
@@ -174,7 +174,7 @@ So, let's create an "**Option 6**" that combines all of the above and let's us u
 
 If you don't know Angular (Angular 2+) yet, go and do [their tutorials](https://angular.io/docs) first.
 
-If you are building an Angular front end web app, you probably should create your code with [Angular CLI](https://github.com/angular/angular-cli).
+If you are building an Angular front-end web app, you probably should create your code with [Angular CLI](https://github.com/angular/angular-cli).
 
 That will help you setting everything up, compiling the app with AOT (Ahead Of Time compilation), serving the app during development with auto-reload, etc.
 
@@ -208,7 +208,7 @@ import { environment } from '../environments/environment';
 
 export class AppComponent {
   
-  ...
+...
 
   production = environment.production;
 }
@@ -217,10 +217,9 @@ export class AppComponent {
 * Your final code might look like:
 
 ```TypeScript
-import { environment } from '../environments/environment';
 import { Component } from '@angular/core';
 
-import {  } from '../environments/environment';
+import { environment } from '../environments/environment';
 
 @Component({
   selector: 'app-root',
@@ -250,7 +249,7 @@ export class AppComponent {
 ```html
 <div style="text-align:center">
   <h1>
-    Welcome to {{title}}!
+Welcome to {{title}}!
   </h1>
   <h2 *ngIf="production">We are running in production!</h2>
   <h2 *ngIf="!production">We are running in development...</h2>
@@ -293,30 +292,30 @@ This is a bare-bones Angular project. Just the basic parts to show the point. Th
 
 ## Nginx
 
-Nowdays, Nginx is more or less the "de facto standard" for static content serving. You can search about it and read about its performance. The web is full of articles about it.
+Nowadays, Nginx is more or less the "de facto standard" for static content serving. You can search about it and read about its performance. The web is full of articles about it.
 
-So, for our final Docker image, we will need to have an Nginx configuration. You don't really need to know much more about it for now. As the official Docker image will do all the heavy lifting for you.
+So, for our final Docker image, we will need to have a Nginx configuration. You don't really need to know much more about it for now. As the official Docker image will do all the heavy lifting for you.
 
 But we do need to create a basic config file that we'll use later.
 
-* Add an Nginx configuration inside your project directory, named `nginx-custom.conf`, with:
+* Add a Nginx configuration inside your project directory, named `nginx-custom.conf`, with:
 
 ```nginx
 server {
-    listen       80;
+listen 80;
 
-    location / {
-        root   /usr/share/nginx/html;
-        index  index.html index.htm;
-        try_files $uri $uri/ /index.html =404;
-    }
+location / {
+root /usr/share/nginx/html;
+index index.html index.htm;
+try_files $uri $uri/ /index.html =404;
+}
 }
 ```
 
 * The most important part is the:
 
 ```nginx
-        try_files $uri $uri/ /index.html =404;
+try_files $uri $uri/ /index.html =404;
 ```
 
 ...that tells Nginx to try to match the files it is requested in the URL (URI) with files it has. That will make it match the `/main.bundle.js` and return the JavaScript file. But when there's no match, it will default to `index.html`.
@@ -334,17 +333,17 @@ This is the minimum Nginx configuration. You could finetune it more, depending o
 
 ## Docker
 
-If you don't know Docker yet, and you do at least some back end stuff (deploying a front end app counts), it might change your developer life. So, go ahead, [install Docker](https://docs.docker.com/engine/installation/) and follow the [Get Started guide](https://docs.docker.com/get-started/).
+If you don't know Docker yet, and you do at least some back-end stuff (deploying a front-end app counts), it might change your developer life. So, go ahead, [install Docker](https://docs.docker.com/engine/installation/) and follow the [Get Started guide](https://docs.docker.com/get-started/).
 
-Now, let's asume you already know enough Docker to use it. Let's go to our details.
+Now, let's assume you already know enough Docker to use it. Let's go to our details.
 
-Here, we'll see how we can use [Docker build-time `ARG`s](https://docs.docker.com/engine/reference/builder/#arg). That will allow us to pass build-time variables during image creation. And with that, we'll be able to build different images for the different Angular CLI environments, by just passing an argument. But we need to do a couple things first. 
+Here, we'll see how we can use [Docker build-time `ARG`s](https://docs.docker.com/engine/reference/builder/#arg). That will allow us to pass build-time variables during image creation. And with that, we'll be able to build different images for the different Angular CLI environments, by just passing an argument. But we need to do a couple things first.
 
 When you build your image, Docker normally "sends" all the files in the directory to the part of it that builds the image. If you have a `node_modules` directory, it will take some time doing that. But you don't need `node_modules` to be copied to your Docker, you will install everything inside and create a `node_modules` inside your container, so, sending all your `node_modules` is a waste of time.
 
 The same way you would add `node_modules` to your `.gitignore` file, you can use a `.dockerignore` file.
 
-* Add a `.dockerignore` for `node_modules` with:
+* Add a `.dockerignore` for `node_modules` with:
 
 ```
 node_modules
@@ -500,7 +499,7 @@ You should see something very similar to:
 
 That's it! Angular in Docker, ready for production with great performance (thanks for Nginx). A lot less error prone (thanks to Docker multi-stage builds). Supporting Angular CLI environments, thanks to Docker's `ARG` and `--build-arg`.
 
-You can automatize that a continuous integration / delivery environment or whatever you want very easily with those tricks.
+You can automatize that a continuous integration/delivery environment or whatever you want very easily with those tricks.
 
 I hope that was useful for you.
 
