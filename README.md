@@ -102,7 +102,7 @@ docker run -p 80:80 my-angular-project:dev
 
 ## Details
 
-*Everything above shows the actual code you need. If you're in a hurry, you could probably just copy all that. If you want to know all the details and possible optimizations, continue reading...*
+*Everything above shows the actual code you need. If you're in a hurry, you could probably just copy all that. If you want to know all the details, continue reading...*
 
 ---
 
@@ -165,6 +165,8 @@ That's great! Docker multi-stage builds solve several problems in one shot. And 
 When building your Angular code with [Angular CLI](https://github.com/angular/angular-cli) you have the option to use ["environments"](https://github.com/angular/angular-cli/wiki/build#build-targets-and-environment-files) while building the Angular app. That alows you to, for example, use a production back end API while using the "`prod`" environment and use a testing back end API while using the "`dev`" environment.
 
 But with just the method described above we would have no way to use that feature.
+
+---
 
 So, let's create an "**Option 6**" that combines all of the above and lets us use Angular CLI environments.
 
