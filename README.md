@@ -439,6 +439,8 @@ RUN npm run build -- --prod --environment $env
 FROM nginx:1.13
 ```
 
+...if you were very concerned about disk space (and you didn't have any other image that probably shares the same base layers), or if, for some reason, you are a fan of Alpine Linux, you could change that line and use an [Alpine version of the image](https://hub.docker.com/_/nginx/).
+
 * Here's the Docker multi-stage trick. This is a normal `COPY`, but it has a `--from=node`. That `node` refers to the name we specified above in the `as node`. Here, although we are in an Nginx image, starting from scratch, we can copy files from a previous stage. So, we can just copy the compiled version of our app. That compiled version is based on the latest source code, and that latest compiled version only lives in the previous Docker "stage", for now. But we'll copy it to the Nginx directory, just as static files:
 
 ```Dockerfile
