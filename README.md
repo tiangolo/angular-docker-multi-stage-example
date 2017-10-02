@@ -46,6 +46,7 @@ node_modules
 * Add a `Dockerfile` in your directory with:
 
 ```Dockerfile
+# Stage 0, based on Node.js, to build and compile Angular
 FROM node:8.6 as node
 
 WORKDIR /app
@@ -61,6 +62,7 @@ ARG env=prod
 RUN npm run build -- --prod --environment $env
 
 
+# Stage 1, based on Nginx, to have only the compiled app, ready for production with Nginx
 FROM nginx:1.13
 
 COPY --from=node /app/dist/ /usr/share/nginx/html
@@ -351,6 +353,7 @@ node_modules
 * Add a file named specifically `Dockerfile` in your directory, with:
 
 ```Dockerfile
+# Stage 0, based on Node.js, to build and compile Angular
 FROM node:8.6 as node
 
 WORKDIR /app
@@ -366,11 +369,13 @@ ARG env=prod
 RUN npm run build -- --prod --environment $env
 
 
+# Stage 1, based on Nginx, to have only the compiled app, ready for production with Nginx
 FROM nginx:1.13
 
 COPY --from=node /app/dist/ /usr/share/nginx/html
 
 COPY ./nginx-custom.conf /etc/nginx/conf.d/default.conf
+
 ```
 
 ...now, let's check what all that is doing.
@@ -421,7 +426,7 @@ RUN npm run build -- --prod --environment $env
 
 ...that will build our app, to the default directory `./dist`. Which in this case will be `/app/dist/`.
 
-* In the same file, we start another section, like if 2 files were concatenated. That's Docker multi-stage building. It almost just looks like concatenating `Dockerfile`s. So, let's start with an [official Nginx base image](https://hub.docker.com/_/nginx/) for this "stage":
+* In the same file, we start another section (another "stage"), like if 2 files were concatenated. That's Docker multi-stage building. It almost just looks like concatenating `Dockerfile`s. So, let's start with an [official Nginx base image](https://hub.docker.com/_/nginx/) for this "stage":
 
 ```Dockerfile
 FROM nginx:1.13
