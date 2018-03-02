@@ -281,7 +281,7 @@ ng serve
 * But if you run it passing the `--prod` flag (or the more specific `--environment prod`), e.g.:
 
 ```bash
-ng server --prod
+ng serve --prod
 ```
 
 * And open your browser in <http://localhost:4200>
